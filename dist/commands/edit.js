@@ -21,7 +21,7 @@ const openEditor = (filePath) => {
                 resolve();
             }
             else {
-                reject(new Error(`エディタが終了コード ${code} で終了しました`));
+                reject(new Error(`Editor exited with code ${code}`));
             }
         });
         child.on('error', (err) => {
@@ -30,17 +30,17 @@ const openEditor = (filePath) => {
     });
 };
 exports.editCommand = new commander_1.Command('edit')
-    .description('チートシートを編集（テキストのみ）')
-    .argument('<name>', 'チートシートの名前')
+    .description('Edit a cheatsheet (text only)')
+    .argument('<name>', 'Name of the cheatsheet')
     .action(async (name) => {
     try {
         const sheet = await (0, storage_1.getSheet)(name);
         if (!sheet) {
-            console.error(chalk_1.default.red(`エラー: シート "${name}" が見つかりません`));
+            console.error(chalk_1.default.red(`Error: Sheet "${name}" not found`));
             process.exit(1);
         }
         if (sheet.type !== 'text') {
-            console.error(chalk_1.default.red('エラー: 画像シートは編集できません'));
+            console.error(chalk_1.default.red('Error: Cannot edit image sheets'));
             process.exit(1);
         }
         const filePath = (0, storage_1.getSheetFilePath)(sheet);
@@ -48,10 +48,10 @@ exports.editCommand = new commander_1.Command('edit')
         // 更新日時を更新
         sheet.updatedAt = new Date().toISOString();
         await (0, storage_1.addOrUpdateSheet)(sheet);
-        console.log(chalk_1.default.green(`シート "${name}" を更新しました`));
+        console.log(chalk_1.default.green(`Updated sheet "${name}"`));
     }
     catch (error) {
-        console.error(chalk_1.default.red(`エラー: ${error.message}`));
+        console.error(chalk_1.default.red(`Error: ${error.message}`));
         process.exit(1);
     }
 });

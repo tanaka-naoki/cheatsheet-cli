@@ -23,7 +23,7 @@ const confirmOverwrite = async (name: string): Promise<boolean> => {
 
   return new Promise((resolve) => {
     rl.question(
-      chalk.yellow(`シート "${name}" は既に存在します。上書きしますか？ (y/N): `),
+      chalk.yellow(`Sheet "${name}" already exists. Overwrite? (y/N): `),
       (answer) => {
         rl.close();
         resolve(answer.toLowerCase() === 'y');
@@ -44,7 +44,7 @@ const openEditor = (filePath: string): Promise<void> => {
       if (code === 0) {
         resolve();
       } else {
-        reject(new Error(`エディタが終了コード ${code} で終了しました`));
+        reject(new Error(`Editor exited with code ${code}`));
       }
     });
 
@@ -55,15 +55,15 @@ const openEditor = (filePath: string): Promise<void> => {
 };
 
 export const addCommand = new Command('add')
-  .description('チートシートを追加')
-  .argument('<name>', 'チートシートの名前')
-  .option('-f, --file <path>', '既存ファイルから追加')
+  .description('Add a cheatsheet')
+  .argument('<name>', 'Name of the cheatsheet')
+  .option('-f, --file <path>', 'Add from existing file')
   .addOption(new Option('-i, --image <path>', '画像ファイルを追加').hideHelp())
   .action(async (name: string, options: { file?: string; image?: string }) => {
     // 名前のバリデーション
     if (!validateName(name)) {
       console.error(
-        chalk.red('エラー: 名前には英数字、ハイフン、アンダースコアのみ使用できます')
+        chalk.red('Error: Name can only contain alphanumeric characters, hyphens, and underscores')
       );
       process.exit(1);
     }
@@ -73,7 +73,7 @@ export const addCommand = new Command('add')
     if (existingSheet) {
       const shouldOverwrite = await confirmOverwrite(name);
       if (!shouldOverwrite) {
-        console.log(chalk.yellow('キャンセルしました'));
+        console.log(chalk.yellow('Cancelled'));
         return;
       }
     }
@@ -86,13 +86,13 @@ export const addCommand = new Command('add')
         const imagePath = path.resolve(options.image);
 
         if (!(await fs.pathExists(imagePath))) {
-          console.error(chalk.red(`エラー: ファイルが見つかりません: ${imagePath}`));
+          console.error(chalk.red(`Error: File not found: ${imagePath}`));
           process.exit(1);
         }
 
         if (!isValidImageExtension(imagePath)) {
           console.error(
-            chalk.red('エラー: サポートされていない画像形式です (png, jpg, jpeg, gif, webp, svg)')
+            chalk.red('Error: Unsupported image format (png, jpg, jpeg, gif, webp, svg)')
           );
           process.exit(1);
         }
@@ -112,7 +112,7 @@ export const addCommand = new Command('add')
         };
 
         await addOrUpdateSheet(sheet);
-        console.log(chalk.green(`画像シート "${name}" を追加しました`));
+        console.log(chalk.green(`Added image sheet "${name}"`));
       } else if (options.file) {
         // 既存テキストファイルから追加
         const filePath = path.resolve(options.file);
@@ -137,7 +137,7 @@ export const addCommand = new Command('add')
         };
 
         await addOrUpdateSheet(sheet);
-        console.log(chalk.green(`テキストシート "${name}" を追加しました`));
+        console.log(chalk.green(`Added text sheet "${name}"`));
       } else {
         // エディタで新規作成
         const filename = `${name}.md`;
@@ -154,7 +154,7 @@ export const addCommand = new Command('add')
         const content = await fs.readFile(filePath, 'utf-8');
         if (content.trim() === '') {
           await fs.remove(filePath);
-          console.log(chalk.yellow('内容が空のためキャンセルしました'));
+          console.log(chalk.yellow('Cancelled due to empty content'));
           return;
         }
 
@@ -167,10 +167,10 @@ export const addCommand = new Command('add')
         };
 
         await addOrUpdateSheet(sheet);
-        console.log(chalk.green(`テキストシート "${name}" を追加しました`));
+        console.log(chalk.green(`Added text sheet "${name}"`));
       }
     } catch (error) {
-      console.error(chalk.red(`エラー: ${(error as Error).message}`));
+      console.error(chalk.red(`Error: ${(error as Error).message}`));
       process.exit(1);
     }
   });

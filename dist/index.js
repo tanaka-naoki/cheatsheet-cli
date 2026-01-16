@@ -12,7 +12,7 @@ const storage_1 = require("./lib/storage");
 const program = new commander_1.Command();
 program
     .name('cs')
-    .description('コマンドやツールのチートシートをローカルに保存・管理するCLIツール')
+    .description('A CLI tool to save and manage cheatsheets for commands and tools locally')
     .version('1.0.0');
 // コマンドを登録
 program.addCommand(add_1.addCommand);
@@ -30,7 +30,7 @@ const main = async () => {
     program.parse(process.argv);
 };
 main().catch((error) => {
-    console.error('予期しないエラーが発生しました:', error.message);
+    console.error('Unexpected error:', error.message);
     process.exit(1);
 });
 //# sourceMappingURL=index.js.map

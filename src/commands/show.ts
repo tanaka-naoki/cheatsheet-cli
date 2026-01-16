@@ -5,16 +5,16 @@ import { getSheet, readSheetContent, getSheetFilePath } from '../lib/storage';
 import { renderMarkdown } from '../lib/markdown';
 
 export const showCommand = new Command('show')
-  .description('チートシートの内容を表示')
-  .argument('<name>', 'チートシートの名前')
-  .addOption(new Option('-o, --open', '外部ビューアで開く（画像の場合）').hideHelp())
-  .option('-r, --raw', '生のMarkdownを表示')
+  .description('Display cheatsheet contents')
+  .argument('<name>', 'Name of the cheatsheet')
+  .addOption(new Option('-o, --open', 'Open with external viewer (for images)').hideHelp())
+  .option('-r, --raw', 'Display raw Markdown')
   .action(async (name: string, options: { open?: boolean; raw?: boolean }) => {
     try {
       const sheet = await getSheet(name);
 
       if (!sheet) {
-        console.error(chalk.red(`エラー: シート "${name}" が見つかりません`));
+        console.error(chalk.red(`Error: Sheet "${name}" not found`));
         process.exit(1);
       }
 
@@ -27,17 +27,17 @@ export const showCommand = new Command('show')
         }
       } else {
         const filePath = getSheetFilePath(sheet);
-        console.log(chalk.cyan(`画像ファイル: ${filePath}`));
+        console.log(chalk.cyan(`Image file: ${filePath}`));
 
         if (options.open) {
           await open(filePath);
-          console.log(chalk.green('外部ビューアで開きました'));
+          console.log(chalk.green('Opened with external viewer'));
         } else {
-          console.log(chalk.gray('--open オプションで外部ビューアで開けます'));
+          console.log(chalk.gray('Use --open option to open with external viewer'));
         }
       }
     } catch (error) {
-      console.error(chalk.red(`エラー: ${(error as Error).message}`));
+      console.error(chalk.red(`Error: ${(error as Error).message}`));
       process.exit(1);
     }
   });

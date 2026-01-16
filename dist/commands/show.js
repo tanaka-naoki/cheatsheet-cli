@@ -10,15 +10,15 @@ const open_1 = __importDefault(require("open"));
 const storage_1 = require("../lib/storage");
 const markdown_1 = require("../lib/markdown");
 exports.showCommand = new commander_1.Command('show')
-    .description('チートシートの内容を表示')
-    .argument('<name>', 'チートシートの名前')
-    .addOption(new commander_1.Option('-o, --open', '外部ビューアで開く（画像の場合）').hideHelp())
-    .option('-r, --raw', '生のMarkdownを表示')
+    .description('Display cheatsheet contents')
+    .argument('<name>', 'Name of the cheatsheet')
+    .addOption(new commander_1.Option('-o, --open', 'Open with external viewer (for images)').hideHelp())
+    .option('-r, --raw', 'Display raw Markdown')
     .action(async (name, options) => {
     try {
         const sheet = await (0, storage_1.getSheet)(name);
         if (!sheet) {
-            console.error(chalk_1.default.red(`エラー: シート "${name}" が見つかりません`));
+            console.error(chalk_1.default.red(`Error: Sheet "${name}" not found`));
             process.exit(1);
         }
         if (sheet.type === 'text') {
@@ -32,18 +32,18 @@ exports.showCommand = new commander_1.Command('show')
         }
         else {
             const filePath = (0, storage_1.getSheetFilePath)(sheet);
-            console.log(chalk_1.default.cyan(`画像ファイル: ${filePath}`));
+            console.log(chalk_1.default.cyan(`Image file: ${filePath}`));
             if (options.open) {
                 await (0, open_1.default)(filePath);
-                console.log(chalk_1.default.green('外部ビューアで開きました'));
+                console.log(chalk_1.default.green('Opened with external viewer'));
             }
             else {
-                console.log(chalk_1.default.gray('--open オプションで外部ビューアで開けます'));
+                console.log(chalk_1.default.gray('Use --open option to open with external viewer'));
             }
         }
     }
     catch (error) {
-        console.error(chalk_1.default.red(`エラー: ${error.message}`));
+        console.error(chalk_1.default.red(`Error: ${error.message}`));
         process.exit(1);
     }
 });

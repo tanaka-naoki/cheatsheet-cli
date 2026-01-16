@@ -12,7 +12,7 @@ const confirmDelete = async (name: string): Promise<boolean> => {
 
   return new Promise((resolve) => {
     rl.question(
-      chalk.yellow(`シート "${name}" を削除しますか？ (y/N): `),
+      chalk.yellow(`Delete sheet "${name}"? (y/N): `),
       (answer) => {
         rl.close();
         resolve(answer.toLowerCase() === 'y');
@@ -22,30 +22,30 @@ const confirmDelete = async (name: string): Promise<boolean> => {
 };
 
 export const removeCommand = new Command('rm')
-  .description('チートシートを削除')
-  .argument('<name>', 'チートシートの名前')
-  .option('-f, --force', '確認をスキップ')
+  .description('Remove a cheatsheet')
+  .argument('<name>', 'Name of the cheatsheet')
+  .option('-f, --force', 'Skip confirmation')
   .action(async (name: string, options: { force?: boolean }) => {
     try {
       const sheet = await getSheet(name);
 
       if (!sheet) {
-        console.error(chalk.red(`エラー: シート "${name}" が見つかりません`));
+        console.error(chalk.red(`Error: Sheet "${name}" not found`));
         process.exit(1);
       }
 
       if (!options.force) {
         const shouldDelete = await confirmDelete(name);
         if (!shouldDelete) {
-          console.log(chalk.yellow('キャンセルしました'));
+          console.log(chalk.yellow('Cancelled'));
           return;
         }
       }
 
       await removeSheet(name);
-      console.log(chalk.green(`シート "${name}" を削除しました`));
+      console.log(chalk.green(`Deleted sheet "${name}"`));
     } catch (error) {
-      console.error(chalk.red(`エラー: ${(error as Error).message}`));
+      console.error(chalk.red(`Error: ${(error as Error).message}`));
       process.exit(1);
     }
   });

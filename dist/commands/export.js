@@ -10,14 +10,14 @@ const path_1 = __importDefault(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const storage_1 = require("../lib/storage");
 exports.exportCommand = new commander_1.Command('export')
-    .description('チートシートをエクスポート')
-    .argument('<name>', 'チートシートの名前')
-    .option('-o, --out <path>', '出力先パス')
+    .description('Export a cheatsheet')
+    .argument('<name>', 'Name of the cheatsheet')
+    .option('-o, --out <path>', 'Output path')
     .action(async (name, options) => {
     try {
         const sheet = await (0, storage_1.getSheet)(name);
         if (!sheet) {
-            console.error(chalk_1.default.red(`エラー: シート "${name}" が見つかりません`));
+            console.error(chalk_1.default.red(`Error: Sheet "${name}" not found`));
             process.exit(1);
         }
         const srcPath = (0, storage_1.getSheetFilePath)(sheet);
@@ -26,10 +26,10 @@ exports.exportCommand = new commander_1.Command('export')
         // 出力先ディレクトリが存在することを確認
         await fs_extra_1.default.ensureDir(destDir);
         await fs_extra_1.default.copy(srcPath, destPath);
-        console.log(chalk_1.default.green(`エクスポートしました: ${destPath}`));
+        console.log(chalk_1.default.green(`Exported: ${destPath}`));
     }
     catch (error) {
-        console.error(chalk_1.default.red(`エラー: ${error.message}`));
+        console.error(chalk_1.default.red(`Error: ${error.message}`));
         process.exit(1);
     }
 });

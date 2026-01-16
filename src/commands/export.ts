@@ -5,15 +5,15 @@ import fs from 'fs-extra';
 import { getSheet, getSheetFilePath } from '../lib/storage';
 
 export const exportCommand = new Command('export')
-  .description('チートシートをエクスポート')
-  .argument('<name>', 'チートシートの名前')
-  .option('-o, --out <path>', '出力先パス')
+  .description('Export a cheatsheet')
+  .argument('<name>', 'Name of the cheatsheet')
+  .option('-o, --out <path>', 'Output path')
   .action(async (name: string, options: { out?: string }) => {
     try {
       const sheet = await getSheet(name);
 
       if (!sheet) {
-        console.error(chalk.red(`エラー: シート "${name}" が見つかりません`));
+        console.error(chalk.red(`Error: Sheet "${name}" not found`));
         process.exit(1);
       }
 
@@ -25,9 +25,9 @@ export const exportCommand = new Command('export')
       await fs.ensureDir(destDir);
 
       await fs.copy(srcPath, destPath);
-      console.log(chalk.green(`エクスポートしました: ${destPath}`));
+      console.log(chalk.green(`Exported: ${destPath}`));
     } catch (error) {
-      console.error(chalk.red(`エラー: ${(error as Error).message}`));
+      console.error(chalk.red(`Error: ${(error as Error).message}`));
       process.exit(1);
     }
   });
