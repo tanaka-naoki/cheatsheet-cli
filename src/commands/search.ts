@@ -3,8 +3,8 @@ import chalk from 'chalk';
 import { getAllSheets, readSheetContent } from '../lib/storage';
 
 export const searchCommand = new Command('search')
-  .description('チートシートをキーワード検索')
-  .argument('<keyword>', '検索キーワード')
+  .description('Search cheatsheets by keyword')
+  .argument('<keyword>', 'Search keyword')
   .action(async (keyword: string) => {
     try {
       const sheets = await getAllSheets();
@@ -16,8 +16,8 @@ export const searchCommand = new Command('search')
         if (sheet.name.toLowerCase().includes(lowerKeyword)) {
           results.push({
             name: sheet.name,
-            type: sheet.type === 'text' ? 'テキスト' : '画像',
-            matchType: '名前',
+            type: sheet.type === 'text' ? 'Text' : 'Image',
+            matchType: 'name',
           });
           continue;
         }
@@ -28,27 +28,27 @@ export const searchCommand = new Command('search')
           if (content.toLowerCase().includes(lowerKeyword)) {
             results.push({
               name: sheet.name,
-              type: 'テキスト',
-              matchType: '内容',
+              type: 'Text',
+              matchType: 'content',
             });
           }
         }
       }
 
       if (results.length === 0) {
-        console.log(chalk.yellow(`"${keyword}" に一致するシートが見つかりませんでした`));
+        console.log(chalk.yellow(`No sheets found matching "${keyword}"`));
         return;
       }
 
-      console.log(chalk.green(`${results.length} 件見つかりました:\n`));
+      console.log(chalk.green(`Found ${results.length} result(s):\n`));
 
       for (const result of results) {
         console.log(
-          `  ${chalk.cyan(result.name)} (${result.type}) - ${chalk.gray(result.matchType + 'で一致')}`
+          `  ${chalk.cyan(result.name)} (${result.type}) - ${chalk.gray('matched by ' + result.matchType)}`
         );
       }
     } catch (error) {
-      console.error(chalk.red(`エラー: ${(error as Error).message}`));
+      console.error(chalk.red(`Error: ${(error as Error).message}`));
       process.exit(1);
     }
   });

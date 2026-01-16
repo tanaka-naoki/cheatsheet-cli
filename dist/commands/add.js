@@ -19,7 +19,7 @@ const confirmOverwrite = async (name) => {
         output: process.stdout,
     });
     return new Promise((resolve) => {
-        rl.question(chalk_1.default.yellow(`シート "${name}" は既に存在します。上書きしますか？ (y/N): `), (answer) => {
+        rl.question(chalk_1.default.yellow(`Sheet "${name}" already exists. Overwrite? (y/N): `), (answer) => {
             rl.close();
             resolve(answer.toLowerCase() === 'y');
         });
@@ -37,7 +37,7 @@ const openEditor = (filePath) => {
                 resolve();
             }
             else {
-                reject(new Error(`エディタが終了コード ${code} で終了しました`));
+                reject(new Error(`Editor exited with code ${code}`));
             }
         });
         child.on('error', (err) => {
@@ -46,14 +46,14 @@ const openEditor = (filePath) => {
     });
 };
 exports.addCommand = new commander_1.Command('add')
-    .description('チートシートを追加')
-    .argument('<name>', 'チートシートの名前')
-    .option('-f, --file <path>', '既存ファイルから追加')
+    .description('Add a cheatsheet')
+    .argument('<name>', 'Name of the cheatsheet')
+    .option('-f, --file <path>', 'Add from existing file')
     .addOption(new commander_1.Option('-i, --image <path>', '画像ファイルを追加').hideHelp())
     .action(async (name, options) => {
     // 名前のバリデーション
     if (!(0, storage_1.validateName)(name)) {
-        console.error(chalk_1.default.red('エラー: 名前には英数字、ハイフン、アンダースコアのみ使用できます'));
+        console.error(chalk_1.default.red('Error: Name can only contain alphanumeric characters, hyphens, and underscores'));
         process.exit(1);
     }
     // 既存シートのチェック
@@ -61,7 +61,7 @@ exports.addCommand = new commander_1.Command('add')
     if (existingSheet) {
         const shouldOverwrite = await confirmOverwrite(name);
         if (!shouldOverwrite) {
-            console.log(chalk_1.default.yellow('キャンセルしました'));
+            console.log(chalk_1.default.yellow('Cancelled'));
             return;
         }
     }
@@ -71,11 +71,11 @@ exports.addCommand = new commander_1.Command('add')
             // 画像ファイルから追加
             const imagePath = path_1.default.resolve(options.image);
             if (!(await fs_extra_1.default.pathExists(imagePath))) {
-                console.error(chalk_1.default.red(`エラー: ファイルが見つかりません: ${imagePath}`));
+                console.error(chalk_1.default.red(`Error: File not found: ${imagePath}`));
                 process.exit(1);
             }
             if (!(0, storage_1.isValidImageExtension)(imagePath)) {
-                console.error(chalk_1.default.red('エラー: サポートされていない画像形式です (png, jpg, jpeg, gif, webp, svg)'));
+                console.error(chalk_1.default.red('Error: Unsupported image format (png, jpg, jpeg, gif, webp, svg)'));
                 process.exit(1);
             }
             const ext = path_1.default.extname(imagePath);
@@ -90,7 +90,7 @@ exports.addCommand = new commander_1.Command('add')
                 updatedAt: now,
             };
             await (0, storage_1.addOrUpdateSheet)(sheet);
-            console.log(chalk_1.default.green(`画像シート "${name}" を追加しました`));
+            console.log(chalk_1.default.green(`Added image sheet "${name}"`));
         }
         else if (options.file) {
             // 既存テキストファイルから追加
@@ -111,7 +111,7 @@ exports.addCommand = new commander_1.Command('add')
                 updatedAt: now,
             };
             await (0, storage_1.addOrUpdateSheet)(sheet);
-            console.log(chalk_1.default.green(`テキストシート "${name}" を追加しました`));
+            console.log(chalk_1.default.green(`Added text sheet "${name}"`));
         }
         else {
             // エディタで新規作成
@@ -126,7 +126,7 @@ exports.addCommand = new commander_1.Command('add')
             const content = await fs_extra_1.default.readFile(filePath, 'utf-8');
             if (content.trim() === '') {
                 await fs_extra_1.default.remove(filePath);
-                console.log(chalk_1.default.yellow('内容が空のためキャンセルしました'));
+                console.log(chalk_1.default.yellow('Cancelled due to empty content'));
                 return;
             }
             const sheet = {
@@ -137,11 +137,11 @@ exports.addCommand = new commander_1.Command('add')
                 updatedAt: now,
             };
             await (0, storage_1.addOrUpdateSheet)(sheet);
-            console.log(chalk_1.default.green(`テキストシート "${name}" を追加しました`));
+            console.log(chalk_1.default.green(`Added text sheet "${name}"`));
         }
     }
     catch (error) {
-        console.error(chalk_1.default.red(`エラー: ${error.message}`));
+        console.error(chalk_1.default.red(`Error: ${error.message}`));
         process.exit(1);
     }
 });

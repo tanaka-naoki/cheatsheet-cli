@@ -15,35 +15,35 @@ const confirmDelete = async (name) => {
         output: process.stdout,
     });
     return new Promise((resolve) => {
-        rl.question(chalk_1.default.yellow(`シート "${name}" を削除しますか？ (y/N): `), (answer) => {
+        rl.question(chalk_1.default.yellow(`Delete sheet "${name}"? (y/N): `), (answer) => {
             rl.close();
             resolve(answer.toLowerCase() === 'y');
         });
     });
 };
 exports.removeCommand = new commander_1.Command('rm')
-    .description('チートシートを削除')
-    .argument('<name>', 'チートシートの名前')
-    .option('-f, --force', '確認をスキップ')
+    .description('Remove a cheatsheet')
+    .argument('<name>', 'Name of the cheatsheet')
+    .option('-f, --force', 'Skip confirmation')
     .action(async (name, options) => {
     try {
         const sheet = await (0, storage_1.getSheet)(name);
         if (!sheet) {
-            console.error(chalk_1.default.red(`エラー: シート "${name}" が見つかりません`));
+            console.error(chalk_1.default.red(`Error: Sheet "${name}" not found`));
             process.exit(1);
         }
         if (!options.force) {
             const shouldDelete = await confirmDelete(name);
             if (!shouldDelete) {
-                console.log(chalk_1.default.yellow('キャンセルしました'));
+                console.log(chalk_1.default.yellow('Cancelled'));
                 return;
             }
         }
         await (0, storage_1.removeSheet)(name);
-        console.log(chalk_1.default.green(`シート "${name}" を削除しました`));
+        console.log(chalk_1.default.green(`Deleted sheet "${name}"`));
     }
     catch (error) {
-        console.error(chalk_1.default.red(`エラー: ${error.message}`));
+        console.error(chalk_1.default.red(`Error: ${error.message}`));
         process.exit(1);
     }
 });

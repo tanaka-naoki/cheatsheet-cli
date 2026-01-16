@@ -12,7 +12,7 @@ const program = new Command();
 
 program
   .name('cs')
-  .description('コマンドやツールのチートシートをローカルに保存・管理するCLIツール')
+  .description('A CLI tool to save and manage cheatsheets for commands and tools locally')
   .version('1.0.0');
 
 // コマンドを登録
@@ -34,6 +34,6 @@ const main = async () => {
 };
 
 main().catch((error) => {
-  console.error('予期しないエラーが発生しました:', error.message);
+  console.error('Unexpected error:', error.message);
   process.exit(1);
 });
