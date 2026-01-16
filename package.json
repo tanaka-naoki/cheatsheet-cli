@@ -1,6 +1,6 @@
 {
   "name": "@gonzui/csheet-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "コマンドやツールのチートシートをローカルに保存・管理できるCLIツール",
   "main": "dist/index.js",
   "bin": {
