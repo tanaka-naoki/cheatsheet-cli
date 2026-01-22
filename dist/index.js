@@ -14,7 +14,7 @@ const program = new commander_1.Command();
 program
     .name('cs')
     .description('A CLI tool to save and manage cheatsheets for commands and tools locally')
-    .version('1.0.0');
+    .version('1.0.5');
 // コマンドを登録
 program.addCommand(add_1.addCommand);
 program.addCommand(list_1.listCommand);
